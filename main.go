@@ -22,6 +22,7 @@ func main() {
 
 	busEtaKey := os.Getenv("BUS_ETA_KEY")
 	journeyPlannerKey := os.Getenv("JOURNEY_PLANNER_KEY")
+	upstreamLink := os.Getenv("UPSTREAM_URL_KEY")
 
 	mux := http.NewServeMux()
 
@@ -43,7 +44,7 @@ func main() {
 			return
 		}
 
-		upstreamURL := fmt.Sprintf("https://dts-backend.transportstack.in/api/serviceset/eta-calculator/stop/etas?stop_id=%s", url.QueryEscape(stopID))
+		upstreamURL := fmt.Sprintf("%s/eta-calculator/stop/etas?stop_id=%s", upstreamLink, url.QueryEscape(stopID))
 		proxyUpstream(w, upstreamURL, busEtaKey)
 	})
 
@@ -59,7 +60,7 @@ func main() {
 			return
 		}
 
-		upstreamURL := fmt.Sprintf("https://dts-backend.transportstack.in/api/serviceset/journey-planner/get_stops?mode=%s", url.QueryEscape(mode))
+		upstreamURL := fmt.Sprintf("%s/journey-planner/get_stops?mode=%s", upstreamLink, url.QueryEscape(mode))
 		proxyUpstream(w, upstreamURL, journeyPlannerKey)
 	})
 
@@ -92,7 +93,8 @@ func main() {
 		}
 
 		upstreamURL := fmt.Sprintf(
-			"https://dts-backend.transportstack.in/api/serviceset/journey-planner/multi_modal?src=%s&src_type=%s&dst=%s&dst_type=%s&mode=%s&time=%s",
+			"%s/journey-planner/multi_modal?src=%s&src_type=%s&dst=%s&dst_type=%s&mode=%s&time=%s",
+			upstreamLink,
 			url.QueryEscape(source),
 			url.QueryEscape(sourceType),
 			url.QueryEscape(destination),
@@ -165,6 +167,6 @@ func corsMiddleware(next http.Handler) http.Handler {
 			return
 		}
 
-		next.ServeHTTP(w,r)
+		next.ServeHTTP(w, r)
 	})
 }
