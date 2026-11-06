@@ -25,7 +25,7 @@ const (
 
 // MetroUpstreamProxy creates the HTTP client inline, attaches Delhi Metro headers,
 // executes the request with a context timeout, and writes the response directly to w.
-func MetroUpstreamProxy(w http.ResponseWriter, targetURL string) {
+func MetroUpstreamProxy(w http.ResponseWriter, targetURL string) ([]byte, int, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 
@@ -33,7 +33,7 @@ func MetroUpstreamProxy(w http.ResponseWriter, targetURL string) {
 	if err != nil {
 		log.Printf("Upstream request creation error: %v", err)
 		writeJSON(w, http.StatusInternalServerError, map[string]string{"error": "Upstream request encountered error"})
-		return
+		return nil, http.StatusInternalServerError, fmt.Errorf("failed to create request %w", err)
 	}
 
 	// Set required Delhi Metro API headers
@@ -48,7 +48,7 @@ func MetroUpstreamProxy(w http.ResponseWriter, targetURL string) {
 	if err != nil {
 		log.Printf("Upstream request execution error: %v", err)
 		writeJSON(w, http.StatusInternalServerError, map[string]string{"error": "Upstream request encountered error"})
-		return
+		return nil, http.StatusInternalServerError, fmt.Errorf("failed to execute request %w", err)
 	}
 	defer resp.Body.Close()
 
@@ -56,12 +56,13 @@ func MetroUpstreamProxy(w http.ResponseWriter, targetURL string) {
 	if err != nil {
 		log.Printf("Upstream body read error: %v", err)
 		writeJSON(w, http.StatusInternalServerError, map[string]string{"error": "Upstream request encountered error"})
-		return
+		return nil, http.StatusInternalServerError, fmt.Errorf("failed to read response %w", err)
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(resp.StatusCode)
-	w.Write(body)
+	return body, resp.StatusCode, nil
+	// w.Header().Set("Content-Type", "application/json")
+	// w.WriteHeader(resp.StatusCode)
+	// w.Write(body)
 }
 
 // -----------------------------------------------------------------------------
