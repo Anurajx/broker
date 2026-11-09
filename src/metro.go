@@ -95,14 +95,14 @@ func MetroUpstreamProxy(targetURL string) ([]byte, int, error) {
 
 // HandleGetRoute proxies route lookup requests.
 // Example ISO timestamp format: 2026-01-03T20:26:54.799
-func HandleGetRoute(fromCode, toCode, routeType string, departureTime time.Time) {
-	timeFormatted := departureTime.Format("2006-01-02T15:04:05.000")
-	targetURL := fmt.Sprintf("%s/station_route/%s/%s/%s/%s", BaseURL, fromCode, toCode, routeType, timeFormatted)
-	MetroUpstreamProxy(targetURL)
-}
+// func HandleGetRoute(fromCode, toCode, routeType string, departureTime time.Time) {
+// 	timeFormatted := departureTime.Format("2006-01-02T15:04:05.000")
+// 	targetURL := fmt.Sprintf("%s/station_route/%s/%s/%s/%s", BaseURL, fromCode, toCode, routeType, timeFormatted)
+// 	MetroUpstreamProxy(targetURL)
+// }
 
-// HandleGetFareWithRoute proxies fare calculation requests.
-func HandleGetFareWithRoute(fromCode, toCode, routeType string) {
-	targetURL := fmt.Sprintf("%s/new_fare_with_route/%s/%s/%s/", BaseURL, fromCode, toCode, routeType)
-	MetroUpstreamProxy(targetURL)
-}
+// // HandleGetFareWithRoute proxies fare calculation requests.
+// func HandleGetFareWithRoute(fromCode, toCode, routeType string) {
+// 	targetURL := fmt.Sprintf("%s/new_fare_with_route/%s/%s/%s/", BaseURL, fromCode, toCode, routeType)
+// 	MetroUpstreamProxy(targetURL)
+// }
